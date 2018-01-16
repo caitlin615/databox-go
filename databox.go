@@ -87,11 +87,20 @@ var getRequest = func(client *Client, path string) ([]byte, error) {
 }
 
 type LastPush struct {
-	Push           string    `json:"push"`
-	Time           time.Time `json:"datetime"`
-	NumberOfErrors int       `json:"no_err"`
-	Errors         string    `json:"err"`
-	Keys           string    `json:"keys"`
+	Request struct {
+		Date   time.Time `json:"date"`
+		Errors []string  `json:"errors"` // FIXME: When no errors, returns "[]", but what happens if there are errors?
+		Body   struct {
+			Data []map[string]interface{} `json:"data"`
+		} `json:"body"`
+	} `json:"request"`
+	Response struct {
+		Date time.Time `json:"date"`
+		Body struct {
+			ID string `json:"string"`
+		} `json:"body"`
+	} `json:"response"`
+	Metrics []string `json:"metrics"`
 }
 
 /*

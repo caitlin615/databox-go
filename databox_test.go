@@ -40,11 +40,11 @@ func TestLastPush(t *testing.T) {
 		t.Error("Error was raised", err)
 	}
 
-	if lastPush.NumberOfErrors != 0 {
+	if len(lastPush.Request.Errors) != 0 {
 		t.Error("Number of errors in last push must equal 0!")
 	}
 
-	if lastPush.Push == "" {
+	if len(lastPush.Request.Body.Data) == 0 {
 		t.Error("Push must not be nil")
 	}
 }
