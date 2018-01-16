@@ -46,7 +46,7 @@ type ResponseStatus struct {
 
 var postRequest = func(client *Client, path string, payload []byte) ([]byte, error) {
 	userAgent := "Databox/" + clientVersion + " (" + runtime.Version() + ")"
-	request, err := http.NewRequest("POST", (apiUrl + path), bytes.NewBuffer(payload))
+	request, err := http.NewRequest("POST", (client.PushHost + path), bytes.NewBuffer(payload))
 	request.Header.Set("User-Agent", userAgent)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/vnd.databox.v2+json")
@@ -67,7 +67,7 @@ var postRequest = func(client *Client, path string, payload []byte) ([]byte, err
 
 var getRequest = func(client *Client, path string) ([]byte, error) {
 	userAgent := "Databox/" + clientVersion + " (" + runtime.Version() + ")"
-	request, err := http.NewRequest("GET", (apiUrl + path), nil)
+	request, err := http.NewRequest("GET", (client.PushHost + path), nil)
 	request.Header.Set("User-Agent", userAgent)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/vnd.databox.v2+json")
