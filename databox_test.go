@@ -75,10 +75,6 @@ func TestKPI_ToJsonData(t *testing.T) {
 }
 
 func TestSuccessfulPush(t *testing.T) {
-	postRequest = func(client *Client, path string, payload []byte) ([]byte, error) {
-		return []byte(`{"status":"ok"}`), nil
-	}
-
 	if status, _ := NewClient(getToken()).Push(&KPI{
 		Key:   "temp.ny",
 		Value: 60.0,
@@ -88,10 +84,6 @@ func TestSuccessfulPush(t *testing.T) {
 }
 
 func TestFailedPush(t *testing.T) {
-	postRequest = func(client *Client, path string, payload []byte) ([]byte, error) {
-		return []byte(`{"status":"error"}`), nil
-	}
-
 	if status, _ := NewClient(getToken()).Push(&KPI{
 		Key:   "temp.ny",
 		Value: 52.0,
