@@ -47,6 +47,7 @@ var postRequest = func(client *Client, path string, payload []byte) ([]byte, err
 	request, err := http.NewRequest("POST", (apiUrl + path), bytes.NewBuffer(payload))
 	request.Header.Set("User-Agent", userAgent)
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/vnd.databox.v2+json")
 	request.SetBasicAuth(client.PushToken, "")
 
 	if err != nil {
@@ -67,6 +68,7 @@ var getRequest = func(client *Client, path string) ([]byte, error) {
 	request, err := http.NewRequest("GET", (apiUrl + path), nil)
 	request.Header.Set("User-Agent", userAgent)
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/vnd.databox.v2+json")
 	request.SetBasicAuth(client.PushToken, "")
 
 	if err != nil {
