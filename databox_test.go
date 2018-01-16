@@ -9,9 +9,6 @@ import (
 	_ "time"
 )
 
-var originalPostRequest = postRequest
-var originalGetRequest = getRequest
-
 func getToken() (pushToken string) {
 	pushToken = "adxg1kq5a4g04k0wk0s4wkssow8osw84"
 	envPushToken := "" + os.Getenv("DATABOX_PUSH_TOKEN")
@@ -49,14 +46,14 @@ func TestLastPush(t *testing.T) {
 	}
 }
 
-func TestKPI_ToJsonData(t *testing.T) {
-	a := (&KPI{Key: "a", Value: float32(33)}).ToJsonData()
+func TestKPI_ToJSONData(t *testing.T) {
+	a := (&KPI{Key: "a", Value: float32(33)}).ToJSONData()
 	if a["$a"] != float32(33) {
 		t.Error("Conversion error")
 	}
 
 	date := "2015-01-01 09:00:00"
-	b := (&KPI{Key: "a", Date: date}).ToJsonData()
+	b := (&KPI{Key: "a", Date: date}).ToJSONData()
 	if b["date"] != date {
 		t.Error("Conversion error")
 	}
@@ -83,9 +80,6 @@ func TestFailedPush(t *testing.T) {
 }
 
 func TestWithAdditionalAttributes(t *testing.T) {
-	postRequest = originalPostRequest
-	getRequest = originalGetRequest
-
 	client := NewClient(getToken())
 
 	var attributes = make(map[string]interface{})

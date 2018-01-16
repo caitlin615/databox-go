@@ -11,15 +11,17 @@ import (
 )
 
 const (
-	apiUrl        = "https://push2new.databox.com"
+	apiURL        = "https://push2new.databox.com"
 	clientVersion = "0.1.2"
 )
 
+// Client is the client used to communicate with the databox API
 type Client struct {
 	PushToken string
 	PushHost  string
 }
 
+// KPI is a key performance indicator that is sent to the databox API
 type KPI struct {
 	Key        string
 	Value      float32
@@ -27,17 +29,20 @@ type KPI struct {
 	Attributes map[string]interface{}
 }
 
+// KPIWrap is used to serialize KPIs when se
 type KPIWrap struct {
 	Data []map[string]interface{} `json:"data"`
 }
 
+// NewClient creates a new Client with the supplied push token
 func NewClient(pushToken string) *Client {
 	return &Client{
 		PushToken: pushToken,
-		PushHost:  apiUrl,
+		PushHost:  apiURL,
 	}
 }
 
+// ResponseStatus is the response returned from the push API
 type ResponseStatus struct {
 	ID      string   `json:"id"`
 	Metrics []string `json:"metrics"`
@@ -56,13 +61,13 @@ var postRequest = func(client *Client, path string, payload []byte) ([]byte, err
 		return nil, err
 	}
 
-	response, err_2 := (&http.Client{}).Do(request)
-	if err_2 != nil {
-		return nil, err_2
+	response, err2 := (&http.Client{}).Do(request)
+	if err2 != nil {
+		return nil, err2
 	}
 
-	data, err_3 := ioutil.ReadAll(response.Body)
-	return data, err_3
+	data, err3 := ioutil.ReadAll(response.Body)
+	return data, err3
 }
 
 var getRequest = func(client *Client, path string) ([]byte, error) {
@@ -77,15 +82,16 @@ var getRequest = func(client *Client, path string) ([]byte, error) {
 		return nil, err
 	}
 
-	response, err_2 := (&http.Client{}).Do(request)
-	if err_2 != nil {
-		return nil, err_2
+	response, err2 := (&http.Client{}).Do(request)
+	if err2 != nil {
+		return nil, err2
 	}
 
-	data, err_3 := ioutil.ReadAll(response.Body)
-	return data, err_3
+	data, err3 := ioutil.ReadAll(response.Body)
+	return data, err3
 }
 
+// LastPush contains the data returned from the /lastpushes endpoint
 type LastPush struct {
 	Request struct {
 		Date   time.Time `json:"date"`
@@ -111,9 +117,9 @@ func (lastPush *LastPush) UnmarshalJSON(raw []byte) error {
 		return err
 	}
 
-	parsedTime, err_1 := time.Parse(time.RFC3339, preParsed["datetime"].(string))
-	if err_1 != nil {
-		return err_1
+	parsedTime, err1 := time.Parse(time.RFC3339, preParsed["datetime"].(string))
+	if err1 != nil {
+		return err1
 	}
 
 	lastPush.Time = parsedTime
@@ -121,6 +127,7 @@ func (lastPush *LastPush) UnmarshalJSON(raw []byte) error {
 }
 */
 
+// LastPushes returns info on the last n pushes
 func (client *Client) LastPushes(n int) ([]LastPush, error) {
 	response, err := getRequest(client, fmt.Sprintf("/lastpushes/%d", n))
 	if err != nil {
@@ -128,14 +135,15 @@ func (client *Client) LastPushes(n int) ([]LastPush, error) {
 	}
 
 	lastPushes := make([]LastPush, 0)
-	err_1 := json.Unmarshal(response, &lastPushes)
-	if err_1 != nil {
-		return nil, err_1
+	err1 := json.Unmarshal(response, &lastPushes)
+	if err1 != nil {
+		return nil, err1
 	}
 
 	return lastPushes, nil
 }
 
+// LastPush returns the result from the /lastpushes endpoint
 func (client *Client) LastPush() (LastPush, error) {
 	lastPush := LastPush{}
 	response, err := getRequest(client, "/lastpushes")
@@ -144,9 +152,9 @@ func (client *Client) LastPush() (LastPush, error) {
 	}
 
 	lastPushes := make([]LastPush, 0)
-	err_1 := json.Unmarshal(response, &lastPushes)
-	if err_1 != nil {
-		return lastPush, err_1
+	err1 := json.Unmarshal(response, &lastPushes)
+	if err1 != nil {
+		return lastPush, err1
 	}
 	if len(lastPushes) == 0 {
 		return lastPush, fmt.Errorf("no pushes recorded")
@@ -155,6 +163,7 @@ func (client *Client) LastPush() (LastPush, error) {
 	return lastPushes[0], nil
 }
 
+// Push sends data to the databox API
 func (client *Client) Push(kpi *KPI) (*ResponseStatus, error) {
 	payload, err := serializeKPIs([]KPI{*kpi})
 	if err != nil {
@@ -162,22 +171,22 @@ func (client *Client) Push(kpi *KPI) (*ResponseStatus, error) {
 		return &ResponseStatus{}, err
 	}
 
-	response, err_2 := postRequest(client, "/", payload)
-	if err_2 != nil {
+	response, err2 := postRequest(client, "/", payload)
+	if err2 != nil {
 		fmt.Println("post response:")
-		return &ResponseStatus{}, err_2
+		return &ResponseStatus{}, err2
 	}
 
 	var responseStatus = &ResponseStatus{}
-	if err_3 := json.Unmarshal(response, &responseStatus); err_3 != nil {
-		return &ResponseStatus{}, err_3
+	if err3 := json.Unmarshal(response, &responseStatus); err3 != nil {
+		return &ResponseStatus{}, err3
 	}
 
 	return responseStatus, nil
 }
 
-/* Serialisation */
-func (kpi *KPI) ToJsonData() map[string]interface{} {
+// ToJSONData serializes KPI into a payload meant for the databox API
+func (kpi *KPI) ToJSONData() map[string]interface{} {
 	var payload = make(map[string]interface{})
 	payload["$"+kpi.Key] = kpi.Value
 
@@ -200,7 +209,7 @@ func serializeKPIs(kpis []KPI) ([]byte, error) {
 	}
 
 	for _, kpi := range kpis {
-		wrap.Data = append(wrap.Data, kpi.ToJsonData())
+		wrap.Data = append(wrap.Data, kpi.ToJSONData())
 	}
 
 	return json.Marshal(wrap)
