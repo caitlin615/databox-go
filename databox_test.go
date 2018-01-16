@@ -1,12 +1,12 @@
 package databox
 
 import (
-	"testing"
-	"reflect"
-	_ "time"
 	_ "fmt"
 	"os"
+	"reflect"
+	"testing"
 	"time"
+	_ "time"
 )
 
 var originalPostRequest = postRequest
@@ -47,7 +47,6 @@ func TestLastPush(t *testing.T) {
 ]`), nil
 	}
 
-
 	lastPush, err := NewClient(getToken()).LastPush()
 	if err != nil {
 		t.Error("Error was raised", err)
@@ -63,13 +62,13 @@ func TestLastPush(t *testing.T) {
 }
 
 func TestKPI_ToJsonData(t *testing.T) {
-	a := (&KPI{Key:"a", Value:float32(33)}).ToJsonData()
+	a := (&KPI{Key: "a", Value: float32(33)}).ToJsonData()
 	if a["$a"] != float32(33) {
 		t.Error("Conversion error")
 	}
 
 	date := "2015-01-01 09:00:00"
-	b := (&KPI{Key:"a", Date:date}).ToJsonData()
+	b := (&KPI{Key: "a", Date: date}).ToJsonData()
 	if b["date"] != date {
 		t.Error("Conversion error")
 	}
@@ -81,7 +80,7 @@ func TestSuccessfulPush(t *testing.T) {
 	}
 
 	if status, _ := NewClient(getToken()).Push(&KPI{
-		Key:"temp.ny",
+		Key:   "temp.ny",
 		Value: 60.0,
 	}); status.Status != "ok" {
 		t.Error("Not inserted")
@@ -94,7 +93,7 @@ func TestFailedPush(t *testing.T) {
 	}
 
 	if status, _ := NewClient(getToken()).Push(&KPI{
-		Key:"temp.ny",
+		Key:   "temp.ny",
 		Value: 52.0,
 		Date: "2015-01-01 09:00:00",
 	}); status.Status == "ok" {
@@ -113,9 +112,9 @@ func TestWithAdditionalAttributes(t *testing.T) {
 	attributes["test.string"] = "Oto Brglez"
 
 	if status, _ := client.Push(&KPI{
-		Key: "test.TestWithAdditionalAttributes",
-		Value: 10.0,
-		Date: time.Now().Format(time.RFC3339),
+		Key:        "test.TestWithAdditionalAttributes",
+		Value:      10.0,
+		Date:       time.Now().Format(time.RFC3339),
 		Attributes: attributes,
 	}); status.Status != "ok" {
 		t.Error("This status must be ok")
