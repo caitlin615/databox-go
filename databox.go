@@ -39,7 +39,9 @@ func NewClient(pushToken string) *Client {
 }
 
 type ResponseStatus struct {
-	Status string `json:"status"`
+	ID      string   `json:"id"`
+	Metrics []string `json:"metrics"`
+	Errors  []string `json:"errors"`
 }
 
 var postRequest = func(client *Client, path string, payload []byte) ([]byte, error) {

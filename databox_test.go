@@ -78,7 +78,7 @@ func TestSuccessfulPush(t *testing.T) {
 	if status, _ := NewClient(getToken()).Push(&KPI{
 		Key:   "temp.ny",
 		Value: 60.0,
-	}); status.Status != "ok" {
+	}); len(status.Errors) != 0 {
 		t.Error("Not inserted")
 	}
 }
@@ -87,8 +87,9 @@ func TestFailedPush(t *testing.T) {
 	if status, _ := NewClient(getToken()).Push(&KPI{
 		Key:   "temp.ny",
 		Value: 52.0,
-		Date: "2015-01-01 09:00:00",
-	}); status.Status == "ok" {
+		Date:  "2015-01-01 09:00:00",
+	}); len(status.Errors) == 0 {
+		// FIXME: This doesn't fail
 		t.Error("This should not be \"ok\"")
 	}
 }
@@ -108,7 +109,7 @@ func TestWithAdditionalAttributes(t *testing.T) {
 		Value:      10.0,
 		Date:       time.Now().Format(time.RFC3339),
 		Attributes: attributes,
-	}); status.Status != "ok" {
+	}); len(status.Errors) != 0 {
 		t.Error("This status must be ok")
 	}
 
