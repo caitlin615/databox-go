@@ -1,17 +1,17 @@
 package databox
 
 import (
-	"net/http"
 	"bytes"
-	"io/ioutil"
-	"runtime"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"runtime"
 	"time"
 )
 
 const (
-	apiUrl = "https://push2new.databox.com"
+	apiUrl        = "https://push2new.databox.com"
 	clientVersion = "0.1.2"
 )
 
@@ -33,12 +33,12 @@ type KPIWrap struct {
 
 func NewClient(pushToken string) *Client {
 	return &Client{
-		PushToken:    pushToken,
-		PushHost:    apiUrl,
+		PushToken: pushToken,
+		PushHost:  apiUrl,
 	}
 }
 
-type ResponseStatus    struct {
+type ResponseStatus struct {
 	Status string `json:"status"`
 }
 
@@ -83,11 +83,11 @@ var getRequest = func(client *Client, path string) ([]byte, error) {
 }
 
 type LastPush struct {
-	Push           string `json: push`
-	Time           time.Time `json: datetime`
-	NumberOfErrors int `json: no_err`
-	Errors         string `json: err`
-	Keys           string `json: keys`
+	Push           string    `json:"push"`
+	Time           time.Time `json:"datetime"`
+	NumberOfErrors int       `json:"no_err"`
+	Errors         string    `json:"err"`
+	Keys           string    `json:"keys"`
 }
 
 /*
@@ -115,7 +115,7 @@ func (client *Client) LastPushes(n int) ([]LastPush, error) {
 	}
 
 	lastPushes := make([]LastPush, 0)
-	err_1 := json.Unmarshal(response, &lastPushes);
+	err_1 := json.Unmarshal(response, &lastPushes)
 	if err_1 != nil {
 		return nil, err_1
 	}
@@ -154,9 +154,9 @@ func (client *Client) Push(kpi *KPI) (*ResponseStatus, error) {
 }
 
 /* Serialisation */
-func (kpi *KPI) ToJsonData() (map[string]interface{}) {
+func (kpi *KPI) ToJsonData() map[string]interface{} {
 	var payload = make(map[string]interface{})
-	payload["$" + kpi.Key] = kpi.Value
+	payload["$"+kpi.Key] = kpi.Value
 
 	if kpi.Date != "" {
 		payload["date"] = kpi.Date
@@ -176,7 +176,7 @@ func serializeKPIs(kpis []KPI) ([]byte, error) {
 		Data: make([]map[string]interface{}, 0),
 	}
 
-	for _, kpi := range (kpis) {
+	for _, kpi := range kpis {
 		wrap.Data = append(wrap.Data, kpi.ToJsonData())
 	}
 
