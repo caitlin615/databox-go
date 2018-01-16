@@ -126,9 +126,19 @@ func (client *Client) LastPushes(n int) ([]LastPush, error) {
 }
 
 func (client *Client) LastPush() (LastPush, error) {
-	lastPushes, err := client.LastPushes(1)
+	lastPush := LastPush{}
+	response, err := getRequest(client, "/lastpushes")
 	if err != nil {
-		return LastPush{}, err
+		return lastPush, err
+	}
+
+	lastPushes := make([]LastPush, 0)
+	err_1 := json.Unmarshal(response, &lastPushes)
+	if err_1 != nil {
+		return lastPush, err_1
+	}
+	if len(lastPushes) == 0 {
+		return lastPush, fmt.Errorf("no pushes recorded")
 	}
 
 	return lastPushes[0], nil
