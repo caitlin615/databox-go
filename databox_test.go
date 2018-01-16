@@ -35,18 +35,6 @@ func TestSimpleInit(t *testing.T) {
 }
 
 func TestLastPush(t *testing.T) {
-	getRequest = func(client *Client, path string) ([]byte, error) {
-		return []byte(`[
-  {
-    "push": "{\"data\":[{\"$sales\":203},{\"$sales\":103,\"date\":\"2015-01-01 17:00:00\"}]}",
-    "err": "[]",
-    "no_err": 0,
-    "datetime": "2016-01-25T22:08:20.704Z",
-    "keys": "[\"2850|sales\"]"
-  }
-]`), nil
-	}
-
 	lastPush, err := NewClient(getToken()).LastPush()
 	if err != nil {
 		t.Error("Error was raised", err)
